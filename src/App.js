@@ -7,6 +7,7 @@ function App() {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [error, setError] = useState('');
 
+  // Validate if the input is a valid JSON
   const validateJSON = (input) => {
     try {
       JSON.parse(input);
@@ -16,6 +17,7 @@ function App() {
     }
   };
 
+  // Handle form submission
   const handleSubmit = async () => {
     if (validateJSON(jsonInput)) {
       setError('');
@@ -31,31 +33,61 @@ function App() {
     }
   };
 
+  // Handle multi-select dropdown change
   const handleOptionChange = (e) => {
     const value = Array.from(e.target.selectedOptions, option => option.value);
     setSelectedOptions(value);
   };
 
+  // Filter response based on selected options
   const filteredResponse = () => {
     if (!responseData) return null;
 
     let filtered = {};
     if (selectedOptions.includes('Alphabets')) {
-      filtered.alphabets = responseData.alphabets;
+      filtered.alphabets = responseData.alphabets.join(', ');
     }
     if (selectedOptions.includes('Numbers')) {
-      filtered.numbers = responseData.numbers;
+      filtered.numbers = responseData.numbers.join(', ');
     }
     if (selectedOptions.includes('Highest lowercase alphabet')) {
-      filtered.highest_lowercase_alphabet = responseData.highest_lowercase_alphabet;
+      filtered.highest_lowercase_alphabet = responseData.highest_lowercase_alphabet.join(', ');
     }
 
     return filtered;
   };
 
+  const renderFilteredResponse = () => {
+    const filtered = filteredResponse();
+    if (!filtered) return null;
+
+    return (
+      <div style={{ marginTop: '20px' }}>
+        {selectedOptions.includes('Alphabets') && (
+          <div>
+            <h3>Alphabets:</h3>
+            <p>{filtered.alphabets}</p>
+          </div>
+        )}
+        {selectedOptions.includes('Numbers') && (
+          <div>
+            <h3>Numbers:</h3>
+            <p>{filtered.numbers}</p>
+          </div>
+        )}
+        {selectedOptions.includes('Highest lowercase alphabet') && (
+          <div>
+            <h3>Highest Lowercase Alphabet:</h3>
+            <p>{filtered.highest_lowercase_alphabet}</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div style={{ padding: '20px' }}>
-      <h1>Frontend Application</h1>
+      <h1>Bajaj finserv Application</h1>
       <input
         type="text"
         value={jsonInput}
@@ -68,7 +100,7 @@ function App() {
 
       {responseData && (
         <>
-          <h2>Select Filters:</h2>
+          <h2>Select Filters: (To select multiple filters press Ctrl and select multiple of them) </h2>
           <select multiple onChange={handleOptionChange} style={{ width: '200px', height: '100px', marginTop: '10px' }}>
             <option value="Alphabets">Alphabets</option>
             <option value="Numbers">Numbers</option>
@@ -76,9 +108,7 @@ function App() {
           </select>
 
           <h2>Filtered Response:</h2>
-          <pre style={{ backgroundColor: '#f4f4f4', padding: '10px' }}>
-            {JSON.stringify(filteredResponse(), null, 2)}
-          </pre>
+          {renderFilteredResponse()}
         </>
       )}
     </div>
